@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pending Checklist</title>
+</head>
+<body>
+    <h1>Pending Checklist</h1>
+    <table border="1">
+        <tr>
+            <th>User ID</th>
+            <th>Center</th>
+            <th>Region</th>
+            <th>Process</th>
+            <th>Task List</th>
+            <th>Frequency</th>
+            <th>Deadline</th>
+            <th>Status</th>
+
+        </tr>
+        {% for index, row in pending_checklist.iterrows() %}
+            <tr>
+                <td>{{ row['User_ID'] }}</td>
+                <td>{{ row['Center'] }}</td>
+                <td>{{ row['Region'] }}</td>
+                <td>{{ row['Process'] }}</td>
+                <td>{{ row['Task_List'] }}</td>
+                <td>{{ row['Frequency'] }}</td>
+                <td>{{ row['Deadline'] }}</td>
+
+                <td>
+                    <form action="/pending_task" method="POST">
+                        <input type="hidden" name="user" value="{{ row['User_ID'] }}">
+                        <input type="hidden" name="Center" value="{{ row['Center'] }}">
+                        <input type="hidden" name="Region" value="{{ row['Region'] }}">
+                        <input type="hidden" name="Process" value="{{ row['Process'] }}">
+                        <input type="hidden" name="Task" value="{{ row['Task_List'] }}">
+                        <input type="hidden" name="Frequency" value="{{ row['Frequency'] }}">
+
+                        <button type="submit">Update</button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

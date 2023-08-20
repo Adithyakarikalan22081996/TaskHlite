@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>TaskHLite</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-image: url("{{ url_for('static', filename='bg2.jpg') }}");
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      text-align: center;
+      background-color: rgba(255, 255, 255, 0.4);
+      border-radius: 10px;
+      padding: 40px;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+      max-width: 800px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .container::before {
+      content: '';
+      background-color: rgba(255, 255, 255, 0.4);
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: -1;
+    }
+
+    .box {
+      margin-bottom: 30px;
+    }
+
+    .box a {
+      display: block;
+      padding: 20px;
+      text-decoration: none;
+      background-color: #3498db;
+      color: #ffffff;
+      border-radius: 10px;
+      font-size: 18px;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    .box a:hover {
+      background-color: #2980b9;
+      transform: scale(1.05);
+    }
+
+    .header {
+      text-align: center;
+      margin-top: 20px;
+      color: #007bff;
+    }
+
+    .form-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      width: 100%;
+    }
+
+    .form-column {
+      flex: 1;
+      margin-right: 10px;
+    }
+
+    .form-input {
+      width: 85%;
+      height: 20px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 10px;
+      margin-bottom: 5px;
+      margin-left: 5px;
+      margin-right: 5px;
+      margin-top: 5px;
+    }
+
+    .form-textarea {
+      width: 85%;
+      height: 30px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 10px;
+      margin-bottom: 5px;
+      margin-left: 5px;
+      margin-right: 5px;
+      margin-top: 5px;
+    }
+
+    .output-form {
+      width: 50%;
+      margin-top: 30px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background-color: #f9f9f9;
+      margin-left: 25%;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .button {
+      width: 100px;
+      height: 30px;
+      background-color: #7bd043;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    .button:last-child {
+      margin-right: 0;
+    }
+
+    span {
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+<div class="container">
+  <div class="header">
+    <h1>TaskHLite</h1>
+  </div>
+
+  <!-- Input Form -->
+  <form method="POST" action="/activity_tracker" onsubmit="return validateForm()">
+    <div class="form-row">
+      <div class="form-column">
+        <label for="user">User ID:</label>
+        <textarea name="user" id="user" class="form-textarea">{{ user }}</textarea>
+      </div>
+
+      <div class="form-column">
+        <label for="starttime">Start Time:</label>
+        <input type="text" name="starttime" id="starttime" class="form-input" readonly>
+      </div>
+
+      <div class="form-column">
+        <label for="endtime">End Time:</label>
+        <input type="text" name="endtime" id="endtime" class="form-input" readonly>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-column">
+        <label for="Center">Center:</label>
+        <textarea name="Center" class="form-textarea">{{ Center }}</textarea>
+      </div>
+      <div class="form-column">
+        <label for="Region">Region:</label>
+        <textarea name="Region" class="form-textarea">{{ Region }}</textarea>
+      </div>
+      <div class="form-column">
+        <label for="Process">Process:</label>
+        <textarea name="Process" class="form-textarea">{{ Process }}</textarea>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-column">
+        <label for="Task">Task:</label>
+        <textarea name="Task" class="form-textarea">{{ Task }}</textarea>
+      </div>
+      <div class="form-column">
+        <label for="Frequency">Frequency:</label>
+        <textarea name="Frequency" class="form-textarea">{{ Frequency }}</textarea>
+      </div>
+      <div class="form-column">
+        <label for="Status">Status:</label>
+        <textarea name="Status" class="form-textarea">{{ Status }}</textarea>
+      </div>
+    </div>
+
+    <!-- Pending List -->
+    <div class="box">
+      <h2>Pending Tasks</h2>
+      <ul>
+        {% for index, row in pending_checklist.iterrows() %}
+        <li>
+          <a href="#" class="task-link" data-index="{{ index }}">{{ row['Task List'] }}</a>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <!-- Task Details Form -->
+    <!-- Task Details Form -->
+<div class="box" id="task-details">
+  <h2>Task Details</h2>
+  <form id="task-form" method="POST" action="/update_task">
+    <!-- ... (your form inputs to display task details) ... -->
+    <div class="form-row">
+      <div class="form-column">
+        <label for="Center">Center:</label>
+        <textarea name="Center" class="form-textarea">{{ task_center }}</textarea>
+      </div>
+      <div class="form-column">
+        <label for="Region">Region:</label>
+        <textarea name="Region" class="form-textarea">{{ task_region }}</textarea>
+      </div>
+      <div class="form-column">
+        <label for="Process">Process:</label>
+        <textarea name="Process" class="form-textarea">{{ task_process }}</textarea>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-column">
+        <label for="Task">Task:</label>
+        <textarea name="Task" class="form-textarea">{{ task_name }}</textarea>
+      </div>
+      <div class="form-column">
+        <label for="Frequency">Frequency:</label>
+        <textarea name="Frequency" class="form-textarea">{{ task_frequency }}</textarea>
+      </div>
+      <div class="form-column">
+        <label for="Status">Status:</label>
+        <textarea name="Status" class="form-textarea">{{ task_status }}</textarea>
+      </div>
+    </div>
+
+    <input type="hidden" id="selected-index" name="selected_index" value="{{ task_index }}">
+    <!-- ... (rest of your form inputs) ... -->
+    <div class="buttons">
+      <button type="submit" class="button">Update Task</button>
+    </div>
+  </form>
+</div>
+
+
+    <div class="buttons">
+      <button type="submit" class="button">Download</button>
+      <button type="button" class="button" onclick="refreshPage()">Refresh</button>
+    </div>
+  </form>
+</div>
+
+<script>
+function refreshPage() {
+  // Simply reload the page to reset the form and output
+  window.location.reload();
+}
+
+function validateForm() {
+  const userInput = document.getElementById('user');
+  const startDateInput = document.getElementById('startDate');
+  const endDateInput = document.getElementById('endDate');
+
+  if (userInput.value.trim() === '' || startDateInput.value === '' || endDateInput.value === '') {
+    alert('Please fill in all fields.');
+    return false;
+  }
+
+  const startDate = new Date(startDateInput.value);
+  const endDate = new Date(endDateInput.value);
+
+  if (startDate > endDate) {
+    alert('End Date must be greater than or equal to Start Date.');
+    return false;
+  }
+
+  return true;
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+  const starttimeInput = document.getElementById("starttime");
+  const currentDateTime = new Date();
+  const formattedDateTime = currentDateTime.toLocaleString("en-US", {
+    hour12: true,
+    month: "2-digit",
+    day: "2-digit",
+    year: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit"
+  });
+  starttimeInput.value = formattedDateTime;
+});
+
+function validateForm() {
+  const userInput = document.getElementById('user');
+  // ... (rest of the validation logic) ...
+  // You can update the end time value here before submitting the form
+  const endtimeInput = document.getElementById("endtime");
+  const currentDateTime = new Date();
+  const formattedDateTime = currentDateTime.toLocaleString("en-US", {
+    hour12: true,
+    month: "2-digit",
+    day: "2-digit",
+    year: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit"
+  });
+  endtimeInput.value = formattedDateTime;
+
+  return true;
+}
+
+document.querySelectorAll(".task-link").forEach((link) => {
+  link.addEventListener("click", (event) => {
+    event.preventDefault();
+    const index = link.getAttribute("data-index");
+    updateTaskDetails(index);
+  });
+});
+
+// Function to update task details form
+function updateTaskDetails(index) {
+  const form = document.getElementById("task-form");
+  const selectedIndexInput = document.getElementById("selected-index");
+  selectedIndexInput.value = index;
+  form.submit();
+}
+
+</script>
+</body>
+</html>
